@@ -41,7 +41,7 @@ public:
 	void printGraph();
 	bool DFSUtil(int v, int color[]);
 	bool isCyclic();
-	void userInterface(); // user input 
+	static void userInterface(); // user input 
 };
 
 ostream& operator <<(ostream& out, Graph& g);

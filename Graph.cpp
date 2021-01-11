@@ -11,10 +11,7 @@ Graph::AdjListNode* Graph::newAdjListNode(int data) {
 }
 */
 
-Graph::AdjListNode::AdjListNode(int d) :data(d), next(0)
-{
-
-}
+Graph::AdjListNode::AdjListNode(int d) :data(d), next(0) {};
 // our constructor 
 Graph::Graph(int v) : V(v)
 {
@@ -27,8 +24,12 @@ Graph::Graph(int v) : V(v)
 }
 Graph::~Graph()
 {
+	cout << endl << "in destructor" << endl;
 	for (int i = 0; i < V; i++) {
 		// two pointers 
+		if (arr[i].head == NULL) {
+			continue;
+		}
 		AdjListNode* root = arr[i].head;
 		AdjListNode* nextNode = arr[i].head->next;
 		//loop over each node in list
@@ -64,10 +65,10 @@ void Graph::printGraph() {
 	//loop over each adjacent list
 	for (int i = 0; i < V; i++) {
 		AdjListNode* root = arr[i].head;
-		cout << "Adjacency list of vertex " << i << endl;
+		cout << "Vertex " << i << " is connected to:"<< endl;
 		//loop over each node in list
 		while (root != NULL) {
-			cout << root->data << " -> ";
+			cout << "[" << i << "] -->" <<  "[" << root->data << "]";
 			root = root->next;
 		}
 		cout << endl;
@@ -128,33 +129,82 @@ bool Graph::isCyclic()
 void Graph::userInterface()
 {
 	int src, des;
+	char answer;
+	cout << "Do you want to create a Graph ? Enter y: yes  or n:no" << endl;
+	cout << "y/n --> ";
+	cin >> answer;
+	cout << endl;
+	int vertices;
+	while (answer == 'y' || 'Y')
+	{
+		cout << "Graph is being Created..." << endl;
+		
+		// vertices 
+		vertices = 0;
 
-	do {
-		cout << "##Enter edges between different vertices##" << endl;
-		cout << "Enter any Negative number to STOP :L" << endl;
-		cout << "Enter Source: ";
-		cin >> src;
-		cout << endl << "Enter Destination: ";
-		cin >> des;
-		cout << endl;
-		addEdge(src, des);
-		cout << "-------------------------------------------------------------------------------" << endl;
-		cout << "-------------------------------------------------------------------------------" << endl;
-		cout << "**Graph Represenation**" << endl;
-		cout << *this << endl;
-		cout << endl;
-		if (isCyclic()) {
-			cout << "*Answer*" << endl;
-			cout << "Graph contains cycle" << endl << endl;
+		while (vertices < 1) {
+			cerr << "!!! Vertices must be an POSITIVE integer [1 <= v <= 20] !!!" << endl;
+			cout << "Enter number of vertices: ";
+			cin >> vertices;
+			cout << endl;
 		}
-		else
-		{
-			cout << "*Answer*" << endl;
-			cout << "Graph doesn't contain cycle" << endl << endl;
-		}
-		cout << "-------------------------------------------------------------------------------" << endl;
-		cout << "-------------------------------------------------------------------------------" << endl;
-	} while (src >= 0 && des >= 0);
+
+		Graph g(vertices);
+
+
+			cout << "### Creating edges between different vertices ###" << endl;
+			cout << "Enter a NEGATIVE [-ve]  Destination to exit" << endl;
+			cout << "Source index: ";
+			cin >> src;
+			cout << endl << "Destination index: ";
+			cin >> des;
+			cout << endl;
+
+		while (src >= 0 && des >= 0) {
+			g.addEdge(src, des);
+			cout << "-------------------------------------------------------------------------------" << endl;
+			cout << "-------------------------------------------------------------------------------" << endl;
+			cout << "**Graph Represenation**" << endl;
+			cout << g << endl;
+			cout << endl;
+			if (g.isCyclic()) {
+				cout << "*Answer*" << endl;
+				cout << "Graph contains cycle" << endl << endl;
+			}
+			else
+			{
+				cout << "*Answer*" << endl;
+				cout << "Graph doesn't contain cycle" << endl << endl;
+			}
+
+			cout << "-------------------------------------------------------------------------------" << endl;
+			cout << "-------------------------------------------------------------------------------" << endl;
+			cout << "### Creating edges between different vertices ###" << endl;
+			cout << "" << endl;
+			cout << "Source index: ";
+			cin >> src;
+			cout << endl << "Enter Destination: ";
+			cin >> des;
+			cout << endl;
+
+		};
+
+		cout << "***************************" << endl;
+			cout << "Do you want to create a Graph ? Enter y: yes  or n:no" << endl;
+			cout << "Your Answer: ";
+			cin >> answer;
+			cout << endl << (answer == 'y') << endl;
+			cout << endl;
+
+			if (answer == 'n') {
+				break;
+			}
+			cout << endl << "did not exit" << endl;
+			//g.~Graph();
+	}
+
+	cout << "< !! Programm has finished !!>" << endl;
+	exit(0);
 
 }
 
