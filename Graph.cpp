@@ -1,38 +1,32 @@
 #include <iostream>
 #include "Graph.h"
 using namespace std;
-//create a new node
-/*
-Graph::AdjListNode* Graph::newAdjListNode(int data) {
-	AdjListNode* nptr = new AdjListNode;
-	nptr->data = data;
-	nptr->next = NULL;
-	return nptr;
-}
-*/
+
 void printGuide(int v);
-Graph::AdjListNode::AdjListNode(int d) :data(d), next(0) {};
-// our constructor 
-Graph::Graph(int v) : V(v)
+
+Graph::AdjListNode::
+AdjListNode(int d):data(d), next(0) {};
+
+Graph::
+Graph(int v) : V(v)
 {
-	//create an array of adjacency list. size of array - V
 	arr = new AdjList[V];
-	//initialize with NULL (e.g root=NULL)
 	for (int i = 0; i < V; i++) {
 		arr[i].head = NULL;
 	}
 }
-Graph::~Graph()
+Graph::
+~Graph()
 {
-	cout << endl << "in destructor" << endl;
+
+	//loop over ech adjacency list node with 2 pointer root and nextNode
+	//delete vertices @root then move to nextNode, then move nextNode
+	//first check that adjaceny list is not NULL, if NULL then skip this list.
 	for (int i = 0; i < V; i++) {
-		// two pointers 
-		if (arr[i].head == NULL) {
+		if (arr[i].head == NULL)
 			continue;
-		}
 		AdjListNode* root = arr[i].head;
 		AdjListNode* nextNode = arr[i].head->next;
-		//loop over each node in list
 		while (nextNode != NULL) {
 			delete(root);
 			root = nextNode;
@@ -40,13 +34,14 @@ Graph::~Graph()
 		}
 		delete(root);
 	}
-	delete[] arr;
+	delete[] arr; // delete the graph at the end.
 }
 
-//add an edge to an undirected Graph
-void Graph::addEdge(int src, int dest) {
-	//Add an edge from src to dest. A new node added to the adjacency list of src
-	//node added at beginning
+
+void Graph::
+addEdge(int src, int dest) 
+{
+
 	if (src < V && dest < V && V > 0) {
 		AdjListNode* nptr = new AdjListNode(dest);
 		nptr->next = arr[src].head;
@@ -61,7 +56,9 @@ void Graph::addEdge(int src, int dest) {
 }
 
 //function to print the graph
-void Graph::printGraph() {
+void Graph::
+printGraph() 
+{
 	//loop over each adjacent list
 	for (int i = 0; i < V; i++) {
 		AdjListNode* root = arr[i].head;
@@ -77,7 +74,8 @@ void Graph::printGraph() {
 
 // Recursive function to find if there is back edge 
 // in DFS subtree tree rooted with 'u' 
-bool Graph::DFSUtil(int v, int color[])
+bool Graph::
+DFSUtil(int v, int color[])
 {
 	// GRAY :  This vertex is being processed (DFS 
 	//         for this vertex has started, but not 
@@ -126,7 +124,7 @@ bool Graph::isCyclic()
 }
 
 
-void Graph::userInterface()
+void Graph::exe()
 {
 	int src, des;
 	char cont = 0;
@@ -159,7 +157,7 @@ void Graph::userInterface()
 		printGuide(vertices);
 
 		cout << "      _____Create edges between vertices____"<< endl;
-		cout << "	__NEGATIVE <Destination> endS graph__" << endl;
+		cout << "	__NEGATIVE <Destination> ends graph__" << endl;
 		cout << ">> Source index" << endl << "  >>>  ";
 		cin >> src;
 		cout << endl << ">> Destination index" << endl << "  >>>  ";
@@ -208,6 +206,21 @@ ostream& operator <<(ostream& out, Graph& g)
 	g.printGraph();
 	return out;
 }
+
+//istream& operator >>(istream& out, Graph& g)
+//{
+//	g.getEdge();
+//	return out;
+//}
+//void Graph::getEdge(int& src, int& des) {
+//	cout << "      _____Create edges between vertices____" << endl;
+//	cout << "	__NEGATIVE <Destination> ends graph__" << endl;
+//	cout << ">> Source index" << endl << "  >>>  ";
+//	cin >> src;
+//	cout << endl << ">> Destination index" << endl << "  >>>  ";
+//	cin >> des;
+//	cout << endl;
+//}
 
 void printGuide(int v) {
 	cout << endl << "        ___________Guide___________";
