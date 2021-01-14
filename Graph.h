@@ -1,7 +1,10 @@
 #pragma once
 #include<iostream>
-#include<cstdlib>
 using namespace std;
+
+
+
+
 /*
 |Verticies|         |<---                adjacency list                 --->|
 
@@ -23,33 +26,20 @@ using namespace std;
 |         |         +------+------+------+------+------+------+------+------+
 +---------+
 */
+
 class Graph {
 
-	//colors used to detect cycles
-	enum Color { WHITE, GRAY, BLACK };
-
-	//struct for an adjacency list node
 private:
-	class AdjListNode {
+
+	class AdjListNode
+	{
 	public:
 		AdjListNode(int d);
-		int data;
+		AdjListNode();
+		int index;
 		AdjListNode* next;
 	};
-
-
-	//struct for an adjacency list
-	class AdjList {
-	public:
-		AdjListNode* head;  //pointer to head node of list
-	};
-
-	//struct for a graph. A graph as an array of adjacency lists
-	//Size of array will be V (total vertices)
-		// memeber variables 
-	int V;
-	AdjList* arr;
-
+		
 public:
 	Graph(int v = 0);
 	~Graph();
@@ -57,9 +47,17 @@ public:
 	void printGraph();
 	bool DFSUtil(int v, int color[]);
 	bool isCyclic();
-	static void exe(); // user input 
-	//void getEdge(int& src, int& des);
+	void fetchEdge();
+	void deleteEdge(int src, int des);
+	bool checkEdge(int src, int dest);
+private:
+	enum Color { WHITE, GRAY, BLACK };
+	int V;
+	AdjListNode** verticies;
 };
 
+
+	
 ostream& operator <<(ostream& out, Graph& g);
-//istream& operator >>(istream& out, Graph& g);
+
+istream& operator >>(istream& in, Graph& g);

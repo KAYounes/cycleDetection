@@ -5,14 +5,27 @@ using namespace std;
 void printGuide(int v);
 
 Graph::AdjListNode::
-AdjListNode(int d):data(d), next(0) {};
+AdjListNode(int i):index(i), next(0) {};
+
+Graph::AdjListNode::
+AdjListNode():next(0) {};
 
 Graph::
 Graph(int v) : V(v)
 {
-	arr = new AdjList[V];
+	if (V < 1) {
+		cout << endl << "At least 1 vertices is needed" << endl;
+		exit(-1);
+	}
+
+	verticies = new (nothrow) Graph::AdjListNode* [V]; 
+	if (verticies == NULL) {
+		cerr << "Cannot allocate memory";
+		exit(-1);
+	}
+	
 	for (int i = 0; i < V; i++) {
-		arr[i].head = NULL;
+		verticies[i] = NULL;
 	}
 }
 Graph::
@@ -23,10 +36,10 @@ Graph::
 	//delete vertices @root then move to nextNode, then move nextNode
 	//first check that adjaceny list is not NULL, if NULL then skip this list.
 	for (int i = 0; i < V; i++) {
-		if (arr[i].head == NULL)
+		if (verticies[i] == NULL)
 			continue;
-		AdjListNode* root = arr[i].head;
-		AdjListNode* nextNode = arr[i].head->next;
+		AdjListNode* root = verticies[i];
+		AdjListNode* nextNode = verticies[i]->next;
 		while (nextNode != NULL) {
 			delete(root);
 			root = nextNode;
@@ -34,25 +47,28 @@ Graph::
 		}
 		delete(root);
 	}
-	delete[] arr; // delete the graph at the end.
+	delete[] verticies; // delete the graph at the end.
 }
 
 
 void Graph::
 addEdge(int src, int dest) 
 {
+	 
+	if (checkEdge(src, dest)) {
+		AdjListNode* nptr = new (nothrow) AdjListNode(dest);
+		if (nptr == NULL) {
+			cerr << "Cannot allocate memory";
+			exit(-1);
+		}
 
-	if (src < V && dest < V && V > 0) {
-		AdjListNode* nptr = new AdjListNode(dest);
-		nptr->next = arr[src].head;
-		arr[src].head = nptr;
+		nptr->next = verticies[src];
+		verticies[src] = nptr;
+		return;
 	}
-	else cout << "<<Cannot Connect>>" << endl;
-	//connect from dest to src (since undirected)
-   /* nptr = newAdjListNode(src);
-	nptr->next = arr[dest].head;
-	arr[dest].head = nptr;
-	*/
+	
+	cerr << endl << "src or dest is out of bound" << endl;
+	exit(-1);
 }
 
 //function to print the graph
@@ -61,11 +77,11 @@ printGraph()
 {
 	//loop over each adjacent list
 	for (int i = 0; i < V; i++) {
-		AdjListNode* root = arr[i].head;
-		cout << "Vertex " << i << " is connected to:";
+		AdjListNode* root = verticies[i];
+		cout << "Vertex _" << i + 1 << "_ is connected to:";
 		//loop over each node in list
 		while (root != NULL) {
-			cout << endl << "[" << i << "] -->" <<  "[" << root->data << "]";
+			cout << endl << "[" << i + 1<< "] --> " <<  "[" << (root->index) + 1 << "]";
 			root = root->next;
 		}
 		cout << endl;
@@ -84,16 +100,16 @@ DFSUtil(int v, int color[])
 	color[v] = GRAY;
 
 	// Iterate through all adjacent vertices 
-	AdjListNode* myNode = arr[v].head;
+	AdjListNode* myNode = verticies[v];
 	while (myNode != NULL)
 	{
 		// If there is 
-		if (color[myNode->data] == GRAY)
+		if (color[myNode->index] == GRAY)
 			return true;
 
 		// If v is not processed and there is a back 
 		// edge in subtree rooted with v 
-		if (color[myNode->data] == WHITE && DFSUtil(myNode->data, color))
+		if (color[myNode->index] == WHITE && DFSUtil(myNode->index, color))
 			return true;
 		myNode = myNode->next;
 
@@ -109,7 +125,11 @@ DFSUtil(int v, int color[])
 bool Graph::isCyclic()
 {
 	// Initialize color of all vertices as WHITE 
-	int* color = new int[V];
+	int* color = new (nothrow) int[V];
+	if (verticies == NULL) {
+		cerr << "Cannot allocate memory";
+		exit(-1);
+	}
 	for (int i = 0; i < V; i++)
 		color[i] = WHITE;
 
@@ -123,116 +143,81 @@ bool Graph::isCyclic()
 	return false;
 }
 
-
-void Graph::exe()
+void Graph::deleteEdge(int src, int dest)
 {
-	int src, des;
-	char cont = 0;
-	int vertices;
-
-	//Prompt user to create a new graph
-	//
-	cout << " <New Graph?>" << endl <<  "1: yes" << endl << "0: no" << endl << " >>>  ";
-	cin >> cont;
-	cout << endl;
-
-	//loop until the user wishes to stop creating ghraph
-	//
-	while (cont)
-	{
-		cout << "############################____Initializing a new graph____############################" << endl << endl;
-		vertices = 0;
-
-		//loop until <vertices> is more than 1
-		//
-		while (vertices < 1) {
-			cerr << "<How many vertices?>";
-			cout << endl <<  " Between 1 and 100";
-			cout << endl << " >>>  ";
-			cin >> vertices;
-			cout << endl;
-		}
-
-		Graph g(vertices);
-		printGuide(vertices);
-
-		cout << "      _____Create edges between vertices____"<< endl;
-		cout << "	__NEGATIVE <Destination> ends graph__" << endl;
-		cout << ">> Source index" << endl << "  >>>  ";
-		cin >> src;
-		cout << endl << ">> Destination index" << endl << "  >>>  ";
-		cin >> des;
-		cout << endl;
-
-		while (src >= 0 && des >= 0) {
-			g.addEdge(src, des);
-
-			cout << endl << "        ____UPDATES____";
-			cout << endl << endl << " __Updated Gprah__";
-			cout <<  endl << g << endl;
-			if (g.isCyclic()) {
-				cout << "__Cycles__";
-				cout << endl << ">> YES" << endl << endl;
-			}
-			else
-			{
-				cout << "__Cycles__";
-				cout << endl << ">> NO" << endl << endl;
-			}
-
-			cout << "      _____Create edges between vertices____" << endl;
-			cout << "	__NEGATIVE <Destination> endS graph__" << endl;
-			cout << ">> Source index" << endl << "  >>>  ";
-			cin >> src;
-			cout << endl << ">> Destination index" << endl << "  >>>  ";
-			cin >> des;
-			cout << endl;
-
-		};
-
-		cout << "***************************" << endl;
-		cout << " <New Graph?>" << endl << "1: yes" << endl << "0: no" << endl << " >>>  ";
-		cin >> cont;
-		cout << endl;
+	if (!checkEdge(src, dest)) {
+		cerr << endl << "invalid edge coordinates" << endl;
+		exit(-1);
 	}
 
-	cout << "< !! Programm has finished !!>" << endl;
-	exit(0);
+	// Store head node 
+	Graph::AdjListNode* temp = verticies[src];
+	Graph::AdjListNode* prev = NULL;
 
+	// If head node itself holds 
+	// the key to be deleted 
+	if (temp != NULL && temp->index == dest)
+	{
+		verticies[src] = temp->next; // Changed head 
+		delete temp;            // free old head 
+		return;
+	}
+
+	// Else Search for the key to be deleted,  
+	// keep track of the previous node as we 
+	// need to change 'prev->next' */ 
+	while (temp != NULL && temp->index != dest)
+	{
+		prev = temp;
+		temp = temp->next;
+	}
+
+	// If key was not present in linked list 
+	if (temp == NULL)
+		return;
+
+	// Unlink the node from linked list 
+	prev->next = temp->next;
+
+	// Free memory 
+	delete temp;
 }
 
+bool Graph::checkEdge(int src, int dest) {
+	return (-1 < src && src < V && -1 < dest && dest < V);
+}
 ostream& operator <<(ostream& out, Graph& g)
 {
 	g.printGraph();
 	return out;
 }
 
-//istream& operator >>(istream& out, Graph& g)
-//{
-//	g.getEdge();
-//	return out;
+//void Graph::fetchEdge() {
+//	while (1) {
+//		int src, dest;
+//
+//		cout << endl << endl << "#### FORM LINKS";
+//		cout << endl << " > from node "; cin >> src; cout << " > to node "; cin >> dest;
+//		cout << endl;
+//
+//		if (0 < src < V + 1) {
+//			addEdge(src, dest);
+//			cout << "__Edge added__";
+//			cout << endl << endl << "___Updated Gprah";
+//			cout << endl << *this << endl;
+//
+//			cout << "___Cycles Found";
+//			cout << endl << ">> " << (isCyclic() ? "YES" : "NO");
+//			continue;
+//		}
+//
+//		cout << endl << "Verticies start from 1 to " << V;
+//		continue;		
+//	}
 //}
-//void Graph::getEdge(int& src, int& des) {
-//	cout << "      _____Create edges between vertices____" << endl;
-//	cout << "	__NEGATIVE <Destination> ends graph__" << endl;
-//	cout << ">> Source index" << endl << "  >>>  ";
-//	cin >> src;
-//	cout << endl << ">> Destination index" << endl << "  >>>  ";
-//	cin >> des;
-//	cout << endl;
+//
+//istream& operator >>(istream& in, Graph& g) {
+//
+//	g.fetchEdge();
+//	return in;
 //}
-
-void printGuide(int v) {
-	cout << endl << "        ___________Guide___________";
-	cout << endl << "       Input must be between 1 and " << v;
-	cout << endl << "    Enter a NEGATIVE <Destination> to exit";
-	cout << endl << endl << "                Examble code";
-	cout << endl << "    *************************************";
-	cout << endl << "              Source index: 2 ";
-	cout << endl << "              Destination index: " << v;
-	cout << endl << "    *************************************";
-	cout << endl << endl << " An edge will be created between vertex 2 and " << v;
-	cout << endl << "              [2] --- > [" << v << "]";
-	cout << endl << "        ___________   ___________";
-	cout << endl << "                   END" << endl << endl;
-}
