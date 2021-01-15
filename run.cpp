@@ -28,11 +28,11 @@ void promtDelete(int* src, int* dest) {
 int main()
 {
 	int src, dest, vertices;
-	bool cont = 1;
+	bool newGraph = 1;
 
 	//loop until the user wishes to stop creating ghraph
 	//
-	while (cont)
+	while (newGraph)
 	{
 		cout << "<_###_> Initializing a new graph <_###_>" << endl << endl;
 		vertices = 0;
@@ -108,7 +108,7 @@ int main()
 
 		cout << endl << "<_#_> New Graph? <_#_>";
 		cout << endl << " 1: yes / 0: no >> ";
-		cin >> cont;
+		cin >> newGraph;
 		cout << endl;
 	}
 

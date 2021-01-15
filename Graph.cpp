@@ -2,7 +2,6 @@
 #include "Graph.h"
 using namespace std;
 
-void printGuide(int vertices_count);
 
 Graph::Node::
 Node(int i):index(i), next(0) {};
@@ -147,7 +146,7 @@ void Graph::deleteEdge(int src, int dest)
 {
 	if (!checkEdge(src, dest)) {
 		cerr << endl << "invalid edge coordinates" << endl;
-		exit(-1);
+		return;
 	}
 
 	// Store head node 
