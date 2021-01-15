@@ -67,7 +67,7 @@ addEdge(int src, int dest)
 		return;
 	}
 	
-	cerr << endl << "src or dest is out of bound" << endl;
+	cerr << endl << "!! >> src or dest is out of bound << !!" << endl;
 	exit(-1);
 }
 

@@ -5,132 +5,116 @@
 using namespace std;
 
 void printGuide(int v) {
-	cout << endl << "        ___________Guide___________";
-	cout << endl << "       Input must be between 1 and " << v;
-	cout << endl << "    Enter a NEGATIVE <Destination> to exit";
-	cout << endl << endl << "                Examble code";
-	cout << endl << "    *************************************";
-	cout << endl << "              Source index: 2 ";
-	cout << endl << "              Destination index: " << v;
-	cout << endl << "    *************************************";
-	cout << endl << endl << " An edge will be created between vertex 2 and " << v;
-	cout << endl << "              [2] --- > [" << v << "]";
-	cout << endl << "        ___________   ___________";
-	cout << endl << "                   END" << endl << endl;
+	cout << endl << "<_#_> User Guide <_#_>";
+	cout << endl << "> The index of verticies starts from 1 up to " << v;
+	cout << endl << "> input 'a' to add an edge between 2 vertices";
+	cout << endl << "> input 'd' to remove an edge between 2 vertices";
+	cout << endl << "> input 'p' to print the connections in the graph";
+	cout << endl << "> input 'q' to finish the editing the graph";
+	cout << endl << "> The code checks for a cycle each time an edge is added";
+	cout << endl;
 }
 
 void promtAdd(int* src, int* dest) {
-	cout << endl << "Addge edge";
-	cout << endl << "> from node "; cin >> *src; cout << "> to node "; cin >> *dest; cout;
+	cout << endl << "Add edge";
+	cout << endl << "> from node >> "; cin >> *src; cout << "> to node >> "; cin >> *dest; cout;
 }
 
 void promtDelete(int* src, int* dest) {
 	cout << endl << "Remove edge";
-	cout << endl << "> from node "; cin >> *src; cout << "> to node "; cin >> *dest; cout;
+	cout << endl << "> from node >> "; cin >> *src; cout << "> to node >> "; cin >> *dest; cout;
 }
 
 int main()
 {
-	int src = -2;
-	int dest = -2;
-	bool cont = 0;
-	int vertices;
+	int src, dest, vertices;
+	bool cont = 1;
 
-		//Prompt user to create a new graph
+	//loop until the user wishes to stop creating ghraph
+	//
+	while (cont)
+	{
+		cout << "<_###_> Initializing a new graph <_###_>" << endl << endl;
+		vertices = 0;
+
+		//loop until <vertices> is more than 1
 		//
-		cout << "___<New Graph?>";
-		cout << endl << "1: yes";
-		cout << endl << "0: no";
-		cout << endl << "> ";
-		cin >> cont;
-		cout << endl;
+		cout << "<_#_> Specify number of vertices in this graph ?<_#_>";
+		cout << endl << "# V >> ";
+		cin >> vertices;
 
-		//loop until the user wishes to stop creating ghraph
-		//
-		while (cont)
-		{
-			cout << "#### Initializing a new graph" << endl << endl;
-			vertices = 0;
-
-			//loop until <vertices> is more than 1
-			//
-			while (vertices < 1) {
-				cerr << "<Specify number of vertices?>  [min_1 <--> max_100]";
-				cout << endl << "> ";
-				cin >> vertices;
-			}
-
-
-			Graph g(vertices);
-			printGuide(vertices);
-
-			char action= 'c';
-			while (action != 'q')
-			{
-				
-				cout << endl << "<choose action>";
-				cout << endl << "a: add_edge   d: delete_edege   q: quit   p: print";
-				cout << endl << "action > ";  cin >> action; cout << endl;
-				switch (action){
-				case 'a': 
-					promtAdd(&src, &dest);
-					g.addEdge(src - 1, dest - 1);
-					cout << "edge added ___ ";
-					cout << endl << "Cycle detected?  >" << (g.isCyclic() ? "YES" : "NO");
-					break;
-
-				case 'd':
-					promtDelete(&src, &dest);
-					g.deleteEdge(src - 1, dest - 1);
-					cout << "edge deleted" << endl;
-					break;
-
-				case 'c' :
-					continue;
-					break;
-
-				case 'p':
-					cout << g;
-					break;
-
-				default:
-					continue;
-				}
-
-			};
-
-			cout << " <New Graph?>" << endl << "1: yes" << endl << "0: no" << endl << " >>>  ";
-			cin >> cont;
-			cout << endl;
+		while (vertices < 1 || vertices > 50) {
+			cerr << "!__RANGE BETWEEN [1] --> [50]__!";
+			cout << endl << "Number of verticies > ";
+			cin >> vertices;
 		}
 
-		cout << "< !! Programm has finished !!>" << endl;
+
+		Graph g(vertices);
+		printGuide(vertices);
+
+		char action= 'c';
+		while (action != 'q')
+		{
+			cout << endl << "**********************";
+			cout << endl << "<> Choose Action <>";
+			cout << endl << "a: add_edge   d: delete_edge   q: quit   p: print";
+			cout << endl << "action > ";  cin >> action; cout << endl;
+			switch (action){
+			case 'a': 
+				promtAdd(&src, &dest);
+				if (!(g.checkEdge(src - 1, dest - 1))) {
+					cout << "!___EDGE INDEX OUT OF BOUND - EDGE NOT Added!" << endl;
+					break;
+				}
+				g.addEdge(src - 1, dest - 1);
+				cout << ">> Adding edge <<";
+				cout << endl << "Cycle detected?  >> " << (g.isCyclic() ? "YES" : "NO") << endl;
+				if (g.isCyclic()) {
+					action = 'q';
+					cout << "!__CYCLE DETECTED TERMINATING GRAPH, FINAL GRAPH FORM __!" << endl;
+					cout << g << endl;
+				}
+				break;
+
+			case 'd':
+				promtDelete(&src, &dest);
+				if (!(g.checkEdge(src - 1, dest - 1))) {
+					cout << "!___EDGE INDEX OUT OF BOUND - EDGE NOT DELETED___!" << endl;
+					break;
+				}
+				g.deleteEdge(src - 1, dest - 1);
+				cout << ">> Deleting edge <<"<< endl;
+				break;
+
+			case 'c' :
+				continue;
+				break;
+
+			case 'p':
+				cout << g;
+				break;
+
+			case 'q':
+				cout << "!___TERMINATING GRAPH___!" << endl;
+				continue;
+
+			default:
+				cout << endl << "!___INVALID ACTION___!" << endl;
+				continue;
+			}
+
+		};
+
+		cout << endl << "<_#_> New Graph? <_#_>";
+		cout << endl << " 1: yes / 0: no >> ";
+		cin >> cont;
+		cout << endl;
+	}
+
+		cout << "!___TERMINATING APP___!" << endl;
 		exit(0);
 	}
-			//promtAdd(&src, &dest);
-
-			//while (src != -2 || dest != -2){
-			//	if (src > 0 && dest > 0) {
-			//		g.addEdge(src, dest);
-			//	}
-			//	cout << endl << "___Updated Gprah";
-			//	cout << endl << g << endl;
-
-			//	cout << "___Cycles Found";
-			//	cout << endl << ">> " << (g.isCyclic() ? "YES" : "NO");
-
-			//	promtDelete(&src, &dest);
-
-			//	if (src > 0 && dest > 0) {
-			//		g.deleteEdge(src, dest);
-			//		
-			//		cout << endl << "___Updated Gprah";
-			//		cout << endl << g << endl;
-			//	}
-
-			//		promtAdd(&src, &dest);
-
-			//};
 
 
 
