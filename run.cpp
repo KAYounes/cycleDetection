@@ -72,7 +72,7 @@ int main()
 				cout << endl << "Cycle detected?  >> " << (g.isCyclic() ? "YES" : "NO") << endl;
 				if (g.isCyclic()) {
 					action = 'q';
-					cout << "!__CYCLE DETECTED TERMINATING GRAPH, FINAL GRAPH FORM __!" << endl;
+					cout << endl << "!__CYCLE DETECTED TERMINATING GRAPH, PRINTING FINAL GRAPH FORM __!" << endl << endl;
 					cout << g << endl;
 				}
 				break;

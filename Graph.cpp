@@ -2,29 +2,29 @@
 #include "Graph.h"
 using namespace std;
 
-void printGuide(int v);
+void printGuide(int vertices_count);
 
-Graph::AdjListNode::
-AdjListNode(int i):index(i), next(0) {};
+Graph::Node::
+Node(int i):index(i), next(0) {};
 
-Graph::AdjListNode::
-AdjListNode():next(0) {};
+Graph::Node::
+Node():next(0) {};
 
 Graph::
-Graph(int v) : V(v)
+Graph(int vertices_count) : vertices_count(vertices_count)
 {
-	if (V < 1) {
+	if (vertices_count < 1) {
 		cout << endl << "At least 1 vertices is needed" << endl;
 		exit(-1);
 	}
 
-	verticies = new (nothrow) Graph::AdjListNode* [V]; 
+	verticies = new (nothrow) Graph::Node* [vertices_count]; 
 	if (verticies == NULL) {
 		cerr << "Cannot allocate memory";
 		exit(-1);
 	}
 	
-	for (int i = 0; i < V; i++) {
+	for (int i = 0; i < vertices_count; i++) {
 		verticies[i] = NULL;
 	}
 }
@@ -35,11 +35,11 @@ Graph::
 	//loop over ech adjacency list node with 2 pointer root and nextNode
 	//delete vertices @root then move to nextNode, then move nextNode
 	//first check that adjaceny list is not NULL, if NULL then skip this list.
-	for (int i = 0; i < V; i++) {
+	for (int i = 0; i < vertices_count; i++) {
 		if (verticies[i] == NULL)
 			continue;
-		AdjListNode* root = verticies[i];
-		AdjListNode* nextNode = verticies[i]->next;
+		Node* root = verticies[i];
+		Node* nextNode = verticies[i]->next;
 		while (nextNode != NULL) {
 			delete(root);
 			root = nextNode;
@@ -52,18 +52,18 @@ Graph::
 
 
 void Graph::
-addEdge(int src, int dest) 
+addEdge(int source_node_index, int destination_node_index) 
 {
 	 
-	if (checkEdge(src, dest)) {
-		AdjListNode* nptr = new (nothrow) AdjListNode(dest);
+	if (checkEdge(source_node_index, destination_node_index)) {
+		Node* nptr = new (nothrow) Node(destination_node_index);
 		if (nptr == NULL) {
 			cerr << "Cannot allocate memory";
 			exit(-1);
 		}
 
-		nptr->next = verticies[src];
-		verticies[src] = nptr;
+		nptr->next = verticies[source_node_index];
+		verticies[source_node_index] = nptr;
 		return;
 	}
 	
@@ -76,8 +76,8 @@ void Graph::
 printGraph() 
 {
 	//loop over each adjacent list
-	for (int i = 0; i < V; i++) {
-		AdjListNode* root = verticies[i];
+	for (int i = 0; i < vertices_count; i++) {
+		Node* root = verticies[i];
 		cout << "Vertex _" << i + 1 << "_ is connected to:";
 		//loop over each node in list
 		while (root != NULL) {
@@ -91,16 +91,16 @@ printGraph()
 // Recursive function to find if there is back edge 
 // in DFS subtree tree rooted with 'u' 
 bool Graph::
-DFSUtil(int v, int color[])
+DFSUtil(int vertex, int color[])
 {
 	// GRAY :  This vertex is being processed (DFS 
 	//         for this vertex has started, but not 
 	//         ended (or this vertex is in function 
 	//         call stack) 
-	color[v] = GRAY;
+	color[vertex] = GRAY;
 
 	// Iterate through all adjacent vertices 
-	AdjListNode* myNode = verticies[v];
+	Node* myNode = verticies[vertex];
 	while (myNode != NULL)
 	{
 		// If there is 
@@ -116,7 +116,7 @@ DFSUtil(int v, int color[])
 	}
 
 	// Mark this vertex as processed 
-	color[v] = BLACK;
+	color[vertex] = BLACK;
 
 	return false;
 }
@@ -125,17 +125,17 @@ DFSUtil(int v, int color[])
 bool Graph::isCyclic()
 {
 	// Initialize color of all vertices as WHITE 
-	int* color = new (nothrow) int[V];
+	int* color = new (nothrow) int[vertices_count];
 	if (verticies == NULL) {
 		cerr << "Cannot allocate memory";
 		exit(-1);
 	}
-	for (int i = 0; i < V; i++)
+	for (int i = 0; i < vertices_count; i++)
 		color[i] = WHITE;
 
 	// Do a DFS traversal beginning with all 
 	// vertices 
-	for (int i = 0; i < V; i++)
+	for (int i = 0; i < vertices_count; i++)
 		if (color[i] == WHITE)
 			if (DFSUtil(i, color) == true)
 				return true;
@@ -151,8 +151,8 @@ void Graph::deleteEdge(int src, int dest)
 	}
 
 	// Store head node 
-	Graph::AdjListNode* temp = verticies[src];
-	Graph::AdjListNode* prev = NULL;
+	Graph::Node* temp = verticies[src];
+	Graph::Node* prev = NULL;
 
 	// If head node itself holds 
 	// the key to be deleted 
@@ -184,7 +184,7 @@ void Graph::deleteEdge(int src, int dest)
 }
 
 bool Graph::checkEdge(int src, int dest) {
-	return (-1 < src && src < V && -1 < dest && dest < V);
+	return (-1 < src && src < vertices_count && -1 < dest && dest < vertices_count);
 }
 ostream& operator <<(ostream& out, Graph& g)
 {

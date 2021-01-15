@@ -31,29 +31,28 @@ class Graph {
 
 private:
 
-	class AdjListNode
+	class Node
 	{
 	public:
-		AdjListNode(int d);
-		AdjListNode();
+		Node(int data);
+		Node();
 		int index;
-		AdjListNode* next;
+		Node* next;
 	};
 		
 public:
-	Graph(int v = 0);
+	Graph(int vertices_count = 0);
 	~Graph();
-	void addEdge(int, int);
+	void addEdge(int src, int dest);
 	void printGraph();
-	bool DFSUtil(int v, int color[]);
+	bool DFSUtil(int vertices_count, int color[]);
 	bool isCyclic();
-	void fetchEdge();
-	void deleteEdge(int src, int des);
-	bool checkEdge(int src, int dest);
+	void deleteEdge(int source_node_index, int destination_node_index);
+	bool checkEdge(int source_node_index, int destination_node_index);
 private:
 	enum Color { WHITE, GRAY, BLACK };
-	int V;
-	AdjListNode** verticies;
+	int vertices_count;
+	Node** verticies;
 };
 
 
